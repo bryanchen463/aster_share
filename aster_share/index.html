@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <head>
+        <meta charset="UTF-8">
+        <title>Aster Share 查询</title>
+    </head>
+    <title>Aster Share 查询</title>
+    <style>
+        body { max-width: 800px; margin: 20px auto; padding: 20px; font-family: Arial; }
+        .container { border: 1px solid #ccc; padding: 20px; border-radius: 5px; }
+        input { width: 400px; padding: 8px; margin-right: 10px; }
+        button { padding: 8px 15px; background: #007bff; color: white; border: none; border-radius: 3px; }
+        table { margin-top: 20px; width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>查询 Aster Share</h2>
+        <input type="text" id="address" placeholder="输入钱包地址">
+        <button onclick="getShare()">查询</button>
+        
+        <div id="result">
+            <!-- 结果表格 -->
+            <table id="resultTable" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>Epoch</th>
+                        <th>Share</th>
+                        <th>Rank</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody"></tbody>
+            </table>
+            <div id="loading" style="display: none;">加载中...</div>
+            <div id="error" style="color: red; display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        async function getShare() {
+            const address = document.getElementById('address').value;
+            const url = "https://www.asterdex.com/bapi/futures/v1/public/future/ae/rh/history";
+            
+            // 显示加载状态
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('error').style.display = 'none';
+            document.getElementById('resultTable').style.display = 'none';
+
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ address: address })
+                });
+
+                const data = await response.json();
+                
+                if (data.data && data.data.length > 0) {
+                    const tbody = document.getElementById('tableBody');
+                    tbody.innerHTML = ''; // 清空旧数据
+                    
+                    data.data.forEach(epoch => {
+                        const row = `<tr>
+                            <td>${epoch.epochId}</td>
+                            <td>${epoch.share}</td>
+                            <td>${epoch.rank}</td>
+                        </tr>`;
+                        tbody.innerHTML += row;
+                    });
+                    
+                    document.getElementById('resultTable').style.display = 'table';
+                } else {
+                    document.getElementById('error').textContent = '未找到相关数据';
+                    document.getElementById('error').style.display = 'block';
+                }
+            } catch (error) {
+                document.getElementById('error').textContent = '请求失败: ' + error.message;
+                document.getElementById('error').style.display = 'block';
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html> 
