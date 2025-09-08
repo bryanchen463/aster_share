@@ -27,6 +27,7 @@
                 <thead>
                     <tr>
                         <th>Epoch</th>
+                        <th>Epoch Rh</th>
                         <th>Share</th>
                         <th>Rank</th>
                     </tr>
@@ -51,7 +52,9 @@
             try {
                 const response = await fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json', 
+                    },
                     body: JSON.stringify({ address: address })
                 });
 
@@ -64,6 +67,7 @@
                     data.data.forEach(epoch => {
                         const row = `<tr>
                             <td>${epoch.epochId}</td>
+                            <td>${epoch.userCurrentEpochRh}</td>
                             <td>${epoch.share}</td>
                             <td>${epoch.rank}</td>
                         </tr>`;
